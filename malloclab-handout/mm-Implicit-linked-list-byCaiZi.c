@@ -70,9 +70,9 @@ team_t team = {
 #define SIZE_T_SIZE (ALIGN(sizeof(size_t)))
 
 
-#define SetFree 0xFFFE
-#define Free 0x0000
-#define Allocated 0x0001
+#define SetFree 0xFFFFFFFE
+#define Free 0x00000000
+#define Allocated 0x00000001
 
 
 /* 
@@ -175,7 +175,7 @@ int mm_init(void) {
     p = mem_sbrk(newsize);
     ListHead = ListTail = p;
     (char *) point = (char *) (ListHead);
-    int number = 0x0000 | Allocated;
+    int number = 0x00000000 | Allocated;
     *(int *) point = number;
     (char *) point = (char *) point + SIZE_T_SIZE;
     *(int *) point = number;
