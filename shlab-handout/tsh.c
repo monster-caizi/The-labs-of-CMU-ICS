@@ -14,7 +14,6 @@
 #include <errno.h>
 
 
-
 /* Misc manifest constants */
 #define MAXLINE    1024   /* max line size */
 #define MAXARGS     128   /* max args on a command line */
@@ -360,10 +359,14 @@ void waitfg(pid_t pid)
     if (pid == 0) {
 		return;
 	}
-	while(pid == fgpid(jobs)) {
-		sleep(1);
-	}
-    return;
+	sigset_t mask;
+    sigemptyset(&mask);
+    sigaddset(&mask, SIGINT);
+    sigaddset(&mask, SIGTSTP);
+    sigaddset(&mask, SIGQUIT);
+    while (pid == fgpid(jobs)) {
+        sigsuspend(&mask);
+    }
 
 }
 
@@ -382,6 +385,7 @@ void sigchld_handler(int sig)
 {
 
     int olderrno = errno,status;
+   // printf("%d",errno);
     pid_t pid;
     while((pid = waitpid(-1, &status, WNOHANG)) > 0) { //WNOHANG不打算阻塞等待子进程返回时，可以这样使用。
        // printf("1");
@@ -398,10 +402,12 @@ void sigchld_handler(int sig)
 				job->state = ST;
 		    }
         }
-        if (errno != ECHILD) {
-		    unix_error("waitpid error\n");
-	    }
     }
+       // printf("%d",errno);
+    if (errno != ECHILD) {
+	    unix_error("waitpid error");
+	}
+    
 
     errno = olderrno;
     return;
